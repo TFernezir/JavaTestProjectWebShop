@@ -6,11 +6,15 @@ import java.util.Optional;
 
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectUpdateSemanticsDataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
+import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -19,12 +23,49 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import example.WebShopTrening.CustomExceptions.ResourceNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @ControllerAdvice()
 public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
+	
+	@ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<Object> handleEntityNotFound(EntityNotFoundException ex) {
+        return buildResponseEntity(new ErrorResponse(
+            HttpStatus.NOT_FOUND,
+            ex.getMessage())
+        );
+    }
+    
+    @ExceptionHandler(EmptyResultDataAccessException.class)
+    public ResponseEntity<Object> handleEmptyResult(EmptyResultDataAccessException ex) {
+        return buildResponseEntity(new ErrorResponse(
+            HttpStatus.NOT_FOUND,
+            "Resource not found")
+        );
+    }
+    
+    @ExceptionHandler(JpaObjectRetrievalFailureException.class)
+    public ResponseEntity<Object> handleJpaObjectRetrieval(JpaObjectRetrievalFailureException ex) {
+        return buildResponseEntity(new ErrorResponse(
+            HttpStatus.NOT_FOUND,
+            "Referenced entity not found")
+        );
+    }
+    
+    @ExceptionHandler(TransactionSystemException.class)
+    public ResponseEntity<Object> handleTransactionSystem(TransactionSystemException ex) {
+        String message = "Transaction failed";
+        if (ex.getCause() != null && ex.getCause().getCause() != null) {
+            message = ex.getCause().getCause().getMessage();
+        }
+        return buildResponseEntity(new ErrorResponse(
+            HttpStatus.BAD_REQUEST,
+            message)
+        );
+    }
 	
 	@ExceptionHandler(SQLIntegrityConstraintViolationException.class)
 	public ResponseEntity<Object> handelSQLIntegrityException(HttpServletRequest req, SQLIntegrityConstraintViolationException ex){
@@ -60,6 +101,29 @@ public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
         return buildResponseEntity(response);
     }
 	
+	@ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Object> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+        String message = ex.getMostSpecificCause().getMessage();
+        
+        if (message.contains("foreign key")) {
+            return buildResponseEntity(new ErrorResponse(
+                HttpStatus.BAD_REQUEST,
+                "Referenced entity does not exist")
+            );
+        }
+        
+        if (message.contains("unique constraint") || message.contains("Unique index")) {
+            return buildResponseEntity(new ErrorResponse(
+                HttpStatus.CONFLICT,
+                "Entity with these details already exists")
+            );
+        }
+        
+        return buildResponseEntity(new ErrorResponse(
+            HttpStatus.CONFLICT,
+            "Database constraint violation")
+        );
+    }
 
 	@Override
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(

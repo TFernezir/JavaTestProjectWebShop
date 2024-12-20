@@ -18,28 +18,37 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 
+import example.WebShopTrening.entitets.Product;
 import net.minidev.json.JSONArray;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 class WebShopTreningApplicationTests {
-	
-	@Autowired
+    
+    @Autowired
     TestRestTemplate restTemplate;
 
-	@Test
-	void getAllProductsShouldReturnAllProducts() {
-		ResponseEntity<String> response = restTemplate.getForEntity("/products", String.class);
+    private Product createTestProduct(String name, Double price, String about) {
+        Product product = new Product();
+        product.setName(name);
+        product.setPrice(price);
+        product.setAbout(about);
+        return product;
+    }
+
+    @Test
+    void getAllProductsShouldReturnAllProducts() {
+        ResponseEntity<String> response = restTemplate.getForEntity("/products", String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         
         DocumentContext documentContext = JsonPath.parse(response.getBody());
         JSONArray products = documentContext.read("$");
         assertThat(products.size()).isGreaterThan(0);
-	}
-	
-	@Test
-	void getProductShouldReturnProduct() {
-		ResponseEntity<String> response = restTemplate.getForEntity("/products/1", String.class);
+    }
+    
+    @Test
+    void getProductShouldReturnProduct() {
+        ResponseEntity<String> response = restTemplate.getForEntity("/products/1", String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         
         DocumentContext documentContext = JsonPath.parse(response.getBody());
@@ -54,9 +63,9 @@ class WebShopTreningApplicationTests {
         
         Double price = documentContext.read("$.price");
         assertThat(price).isEqualTo(321);
-	}
-	
-	@Test
+    }
+    
+    @Test
     void getProductShouldReturnErrorWhenNotFound() {
         ResponseEntity<String> response = restTemplate.getForEntity("/products/999", String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
@@ -65,8 +74,8 @@ class WebShopTreningApplicationTests {
         String message = documentContext.read("$.message");
         assertThat(message).isEqualTo("Resource not found at path: /products/999");
     }
-	
-   @Test
+    
+    @Test
     void getProductShouldReturnErrorWhenInvalidIdType() {
         ResponseEntity<String> response = restTemplate.getForEntity("/products/abc", String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -76,136 +85,132 @@ class WebShopTreningApplicationTests {
         assertThat(message).isEqualTo("[productId] should be of type [java.lang.Long]");
     }
    
-   @Test 
-   void createProductShouldCreateNewProduct() {
-       Product newProduct = new Product(null, "New Product", 149.99, "New Description");
-       ResponseEntity<String> createResponse = 
-           restTemplate.postForEntity("/products", newProduct, String.class);       
-       assertThat(createResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+    @Test 
+    void createProductShouldCreateNewProduct() {
+        Product newProduct = createTestProduct("New Product", 149.99, "New Description");
+        ResponseEntity<String> createResponse = 
+            restTemplate.postForEntity("/products", newProduct, String.class);       
+        assertThat(createResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
        
-       URI locationOfNewProduct = createResponse.getHeaders().getLocation();
-       ResponseEntity<String> getResponse = restTemplate.getForEntity(locationOfNewProduct, String.class);
-       assertThat(locationOfNewProduct).isNotNull();
+        URI locationOfNewProduct = createResponse.getHeaders().getLocation();
+        ResponseEntity<String> getResponse = restTemplate.getForEntity(locationOfNewProduct, String.class);
+        assertThat(locationOfNewProduct).isNotNull();
        
-       DocumentContext documentContext = JsonPath.parse(getResponse.getBody());
-       Number id = documentContext.read("$.id");
-       Double price = documentContext.read("$.price");
+        DocumentContext documentContext = JsonPath.parse(getResponse.getBody());
+        Number id = documentContext.read("$.id");
+        Double price = documentContext.read("$.price");
        
-       assertThat(id).isNotNull();
-       assertThat(price).isEqualTo(149.99);
-       
-   }
+        assertThat(id).isNotNull();
+        assertThat(price).isEqualTo(149.99);
+    }
    
-   @Test
-   void createProductShouldFailWithEmptyName() {
-       Product invalidProduct = new Product(null, "", 99.99, "Test Description");
-       ResponseEntity<String> response = 
-           restTemplate.postForEntity("/products", invalidProduct, String.class);
+    @Test
+    void createProductShouldFailWithEmptyName() {
+        Product invalidProduct = createTestProduct("", 99.99, "Test Description");
+        ResponseEntity<String> response = 
+            restTemplate.postForEntity("/products", invalidProduct, String.class);
        
-       assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
        
-       DocumentContext documentContext = JsonPath.parse(response.getBody());
-       String message = documentContext.read("$.message");
-       assertThat(message).isEqualTo("Field [NAME] String cannot be empty or whitespace");
-   }
+        DocumentContext documentContext = JsonPath.parse(response.getBody());
+        String message = documentContext.read("$.message");
+        assertThat(message).isEqualTo("Field [NAME] String cannot be empty or whitespace");
+    }
    
-   @Test
-   void createProductShouldFailWithInvalidPrice() {
-       Product invalidProduct = new Product(null, "cz", -1.0, "");
-       ResponseEntity<String> response = 
-           restTemplate.postForEntity("/products", invalidProduct, String.class);
+    @Test
+    void createProductShouldFailWithInvalidPrice() {
+        Product invalidProduct = createTestProduct("cz", -1.0, "");
+        ResponseEntity<String> response = 
+            restTemplate.postForEntity("/products", invalidProduct, String.class);
        
-       assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
        
-       DocumentContext documentContext = JsonPath.parse(response.getBody());
-       String message = documentContext.read("$.message");
-       assertThat(message).contains("Field [PRICE] Price must be greater than 0");
-   }
+        DocumentContext documentContext = JsonPath.parse(response.getBody());
+        String message = documentContext.read("$.message");
+        assertThat(message).contains("Field [PRICE] Price must be greater than 0");
+    }
    
-   @Test
-   void updateProductShouldSucceedWithValidInput() {
-       Product validUpdate = new Product(1L, "Updated Product", 150.00, "Updated Description");
-       ResponseEntity<String> response = restTemplate.exchange(
-           "/products/1",
-           HttpMethod.PUT,
-           new HttpEntity<>(validUpdate),
-           String.class
-       );
+    @Test
+    void updateProductShouldSucceedWithValidInput() {
+        Product validUpdate = createTestProduct("Updated Product", 150.00, "Updated Description");
+        ResponseEntity<String> response = restTemplate.exchange(
+            "/products/1",
+            HttpMethod.PUT,
+            new HttpEntity<>(validUpdate),
+            String.class
+        );
        
-       assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-       DocumentContext documentContext = JsonPath.parse(response.getBody());
-       String name = documentContext.read("$.name");
-       Number price = documentContext.read("$.price");
-       assertThat(name).isEqualTo("Updated Product");
-       assertThat(price).isEqualTo(150.00);
-   }
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        DocumentContext documentContext = JsonPath.parse(response.getBody());
+        String name = documentContext.read("$.name");
+        Number price = documentContext.read("$.price");
+        assertThat(name).isEqualTo("Updated Product");
+        assertThat(price).isEqualTo(150.00);
+    }
    
-   @Test
-   void updateProductShouldFailWithEmptyName() {
-       Product invalidUpdate = new Product(1L, "", 99.99, "Test Description");
-       ResponseEntity<String> response = restTemplate.exchange(
-           "/products/1",
-           HttpMethod.PUT,
-           new HttpEntity<>(invalidUpdate),
-           String.class
-       );
+    @Test
+    void updateProductShouldFailWithEmptyName() {
+        Product invalidUpdate = createTestProduct("", 99.99, "Test Description");
+        ResponseEntity<String> response = restTemplate.exchange(
+            "/products/1",
+            HttpMethod.PUT,
+            new HttpEntity<>(invalidUpdate),
+            String.class
+        );
        
-       assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-       DocumentContext documentContext = JsonPath.parse(response.getBody());
-       String message = documentContext.read("$.message");
-       assertThat(message).isEqualTo("Field [NAME] String cannot be empty or whitespace");
-   }
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        DocumentContext documentContext = JsonPath.parse(response.getBody());
+        String message = documentContext.read("$.message");
+        assertThat(message).isEqualTo("Field [NAME] String cannot be empty or whitespace");
+    }
    
-   @Test
-   void updateProductShouldFailWithNegativePrice() {
-       Product invalidUpdate = new Product(1L, "Test Product", -10.0, "Test Description");
-       ResponseEntity<String> response = restTemplate.exchange(
-           "/products/1",
-           HttpMethod.PUT,
-           new HttpEntity<>(invalidUpdate),
-           String.class
-       );
+    @Test
+    void updateProductShouldFailWithNegativePrice() {
+        Product invalidUpdate = createTestProduct("Test Product", -10.0, "Test Description");
+        ResponseEntity<String> response = restTemplate.exchange(
+            "/products/1",
+            HttpMethod.PUT,
+            new HttpEntity<>(invalidUpdate),
+            String.class
+        );
        
-       assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-       DocumentContext documentContext = JsonPath.parse(response.getBody());
-       String message = documentContext.read("$.message");
-       assertThat(message).isEqualTo("Field [PRICE] Price must be greater than 0");
-   }
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        DocumentContext documentContext = JsonPath.parse(response.getBody());
+        String message = documentContext.read("$.message");
+        assertThat(message).isEqualTo("Field [PRICE] Price must be greater than 0");
+    }
    
-   @Test
-   void deleteProductShouldSucceedWithValidId() {
-       // First create a product to delete
-       Product newProduct = new Product(null, "Product to Delete", 99.99, "Test Description");
-       ResponseEntity<String> createResponse = restTemplate.postForEntity("/products", newProduct, String.class);
-       String location = createResponse.getHeaders().getLocation().getPath();
+    @Test
+    void deleteProductShouldSucceedWithValidId() {
+        Product newProduct = createTestProduct("Product to Delete", 99.99, "Test Description");
+        ResponseEntity<String> createResponse = restTemplate.postForEntity("/products", newProduct, String.class);
+        String location = createResponse.getHeaders().getLocation().getPath();
        
-       // Then delete it
-       ResponseEntity<String> deleteResponse = restTemplate.exchange(
-           location,
-           HttpMethod.DELETE,
-           null,
-           String.class
-       );
+        ResponseEntity<String> deleteResponse = restTemplate.exchange(
+            location,
+            HttpMethod.DELETE,
+            null,
+            String.class
+        );
        
-       assertThat(deleteResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(deleteResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
        
-       // Verify it's deleted
-       ResponseEntity<String> getResponse = restTemplate.getForEntity(location, String.class);
-       assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-   }
+        ResponseEntity<String> getResponse = restTemplate.getForEntity(location, String.class);
+        assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
    
-   @Test
-   void deleteProductShouldFailWithInvalidId() {
-       ResponseEntity<String> response = restTemplate.exchange(
-           "/products/999",
-           HttpMethod.DELETE,
-           null,
-           String.class
-       );
+    @Test
+    void deleteProductShouldFailWithInvalidId() {
+        ResponseEntity<String> response = restTemplate.exchange(
+            "/products/999",
+            HttpMethod.DELETE,
+            null,
+            String.class
+        );
        
-       assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-       DocumentContext documentContext = JsonPath.parse(response.getBody());
-       String message = documentContext.read("$.message");
-       assertThat(message).contains("Product with ID 999 not found");
-   }
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        DocumentContext documentContext = JsonPath.parse(response.getBody());
+        String message = documentContext.read("$.message");
+        assertThat(message).contains("Product with ID 999 not found");
+    }
 }

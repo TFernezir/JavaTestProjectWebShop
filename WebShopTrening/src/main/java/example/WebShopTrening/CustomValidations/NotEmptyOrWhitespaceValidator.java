@@ -1,4 +1,4 @@
-package CustomValidations;
+package example.WebShopTrening.CustomValidations;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;

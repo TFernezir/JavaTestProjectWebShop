@@ -1,10 +1,10 @@
 package example.WebShopTrening.ProductService;
 
-import example.WebShopTrening.entitets.Product;
+import org.springframework.data.domain.Page;
 
 public interface IProductService {
 
-	Iterable<Product> getAllProducts();
+	Page<Product> findAllWithFilters(ProductPage productPage, ProductSearchCriteria searchCriteria);
 
 	Product getProduct(Long productId);
 

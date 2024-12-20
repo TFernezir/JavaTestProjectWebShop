@@ -24,27 +24,23 @@ public class SecurityConfig {
 		this.userDetailService = userDetailService;
 	}
 
-	@Bean
+
+    @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-        .csrf(csrf -> csrf.disable())
-        .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/h2-console/**").permitAll()
-            .requestMatchers("/auth/**").permitAll()
-            .anyRequest().authenticated()
-        )
-        .headers(headers -> headers
-            .frameOptions(frameOptions -> frameOptions.sameOrigin())
-        )
-        .httpBasic(withDefaults());
-    return http.build();
-    }
-	
-    AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailService);
-        authProvider.setPasswordEncoder(passwordEncoder());
-        return authProvider;
+            .csrf(csrf -> csrf.disable())
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/auth/**").permitAll()
+                .requestMatchers("/h2-console/**").permitAll()
+                .anyRequest().authenticated()
+            )
+            .headers(headers -> headers
+                .frameOptions(frameOptions -> frameOptions.sameOrigin())
+            )
+            .httpBasic(withDefaults())
+            .userDetailsService(userDetailService);
+            
+        return http.build();
     }
 
     @Bean

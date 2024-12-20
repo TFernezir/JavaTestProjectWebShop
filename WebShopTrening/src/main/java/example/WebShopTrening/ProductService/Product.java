@@ -1,4 +1,4 @@
-package example.WebShopTrening.entitets;
+package example.WebShopTrening.ProductService;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;

@@ -43,7 +43,8 @@ public class AuthController {
 	public ResponseEntity<String> login(@RequestBody LogInDto logInDto) {
 		Authentication authentication = authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(
-						logInDto.getUserName(), logInDto.getPassword())
+						logInDto.getUserName(), 
+						logInDto.getPassword())
 				);
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		return ResponseEntity.ok("Loged in successfully");
@@ -62,10 +63,10 @@ public class AuthController {
         user.setEmail(registerDto.getEmail());
         user.setPassword(passwordEncoder.encode(registerDto.getPassword()));
 
-        Role defaultRole = roleRepository.findByName("USER")
+        Role defaultRole = roleRepository.findByName("ROLE_USER")
                             .orElseGet(() -> {
                                 Role newRole = new Role();
-                                newRole.setName("USER");
+                                newRole.setName("ROLE_USER");
                                 return roleRepository.save(newRole);
                             });
         

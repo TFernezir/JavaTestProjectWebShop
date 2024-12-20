@@ -2,6 +2,7 @@ package example.WebShopTrening.controllers;
 
 import java.net.URI;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,7 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import example.WebShopTrening.ProductService.IProductService;
-import example.WebShopTrening.entitets.Product;
+import example.WebShopTrening.ProductService.Product;
+import example.WebShopTrening.ProductService.ProductPage;
+import example.WebShopTrening.ProductService.ProductSearchCriteria;
 import jakarta.validation.Valid;
 
 @RestController
@@ -28,8 +31,9 @@ public class ProductsController {
 	}
 
 	@GetMapping
-	public ResponseEntity<Iterable<Product>> getAllProducts() {
-		Iterable<Product> products = productService.getAllProducts();
+	public ResponseEntity<Page<Product>> getProducts(ProductPage productPage,
+													ProductSearchCriteria searchCriteria ) {
+		Page<Product> products = productService.findAllWithFilters(productPage, searchCriteria);
 		return ResponseEntity.ok(products);
 	}
 

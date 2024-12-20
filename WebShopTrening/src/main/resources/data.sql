@@ -1,5 +1,5 @@
-INSERT INTO ROLES (name) VALUES ('USER');
-INSERT INTO ROLES (name) VALUES ('ADMIN');
+INSERT INTO ROLES (name) VALUES ('ROLE_USER');
+INSERT INTO ROLES (name) VALUES ('ROLE_ADMIN');
 
 INSERT INTO PRODUCTS (name, price, about) VALUES ('Spring boot', 15.5, 'Book');
 INSERT INTO PRODUCTS (name, price, about) VALUES ('Second Product', 146.5, 'Shoes');

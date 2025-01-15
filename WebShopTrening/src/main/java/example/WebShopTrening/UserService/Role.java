@@ -1,4 +1,4 @@
-package example.WebShopTrening.entitets;
+package example.WebShopTrening.UserService;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

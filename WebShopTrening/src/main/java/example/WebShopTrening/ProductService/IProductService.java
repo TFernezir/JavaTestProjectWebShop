@@ -1,10 +1,12 @@
 package example.WebShopTrening.ProductService;
 
-import org.springframework.data.domain.Page;
+import java.util.List;
+
+import org.springframework.data.domain.Pageable;
 
 public interface IProductService {
 
-	Page<Product> findAllWithFilters(ProductPage productPage, ProductSearchCriteria searchCriteria);
+	List<Product> findAllWithFilters(Pageable pagable, String search);
 
 	Product getProduct(Long productId);
 

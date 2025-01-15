@@ -13,9 +13,10 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import example.WebShopTrening.entitets.Role;
-import example.WebShopTrening.entitets.UserEntity;
+import example.WebShopTrening.UserService.Role;
+import example.WebShopTrening.UserService.UserEntity;
 import example.WebShopTrening.repositories.UserRepository;
+import jakarta.transaction.Transactional;
 
 @Service
 public class CustomUserDetailService implements UserDetailsService{
@@ -27,6 +28,7 @@ public class CustomUserDetailService implements UserDetailsService{
 	}
 
 	   @Override
+	   @Transactional
 	    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 	        UserEntity user = userRepository.findByUserName(username)
 	            .orElseThrow(() -> new UsernameNotFoundException("User not found"));

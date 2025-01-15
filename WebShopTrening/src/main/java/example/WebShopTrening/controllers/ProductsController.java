@@ -1,8 +1,11 @@
 package example.WebShopTrening.controllers;
 
 import java.net.URI;
+import java.util.List;
 
-import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,13 +14,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import example.WebShopTrening.ProductService.IProductService;
 import example.WebShopTrening.ProductService.Product;
-import example.WebShopTrening.ProductService.ProductPage;
-import example.WebShopTrening.ProductService.ProductSearchCriteria;
 import jakarta.validation.Valid;
 
 @RestController
@@ -31,10 +33,16 @@ public class ProductsController {
 	}
 
 	@GetMapping
-	public ResponseEntity<Page<Product>> getProducts(ProductPage productPage,
-													ProductSearchCriteria searchCriteria ) {
-		Page<Product> products = productService.findAllWithFilters(productPage, searchCriteria);
-		return ResponseEntity.ok(products);
+	public ResponseEntity<List<Product>> getProducts(
+			@RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "ASC") String sortDir,
+            @RequestParam(defaultValue = "name") String sortBy,
+            @RequestParam(required = false) String search
+            ) {
+		Sort.Direction direction = sortDir.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+		Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
+		return ResponseEntity.ok(productService.findAllWithFilters(pageable, search));
 	}
 
 	@GetMapping("/{productId}")

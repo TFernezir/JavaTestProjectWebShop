@@ -17,8 +17,8 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 
+import example.WebShopTrening.BasketService.BasketItem;
 import example.WebShopTrening.ProductService.Product;
-import example.WebShopTrening.entitets.BasketItem;
 import net.minidev.json.JSONArray;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)

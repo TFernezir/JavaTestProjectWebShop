@@ -1,14 +1,6 @@
 package example.WebShopTrening.controllers;
 
-import java.util.Collections;
-
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,63 +8,29 @@ import org.springframework.web.bind.annotation.RestController;
 
 import example.WebShopTrening.Dto.LogInDto;
 import example.WebShopTrening.Dto.RegisterDto;
-import example.WebShopTrening.entitets.Role;
-import example.WebShopTrening.entitets.UserEntity;
-import example.WebShopTrening.repositories.RoleRepository;
-import example.WebShopTrening.repositories.UserRepository;
+import example.WebShopTrening.UserService.IUserService;
+import jakarta.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
 	
-	private AuthenticationManager authenticationManager;
-	private UserRepository userRepository;
-	private RoleRepository roleRepository;
-	private PasswordEncoder passwordEncoder;
-	
-	public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository,
-			RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
+	private final IUserService userService;
+		
+	public AuthController(IUserService userService) {
 		super();
-		this.authenticationManager = authenticationManager;
-		this.userRepository = userRepository;
-		this.roleRepository = roleRepository;
-		this.passwordEncoder = passwordEncoder;
+		this.userService = userService;
 	}
-	
+
 	@PostMapping("/login")
-	public ResponseEntity<String> login(@RequestBody LogInDto logInDto) {
-		Authentication authentication = authenticationManager.authenticate(
-				new UsernamePasswordAuthenticationToken(
-						logInDto.getUserName(), 
-						logInDto.getPassword())
-				);
-		SecurityContextHolder.getContext().setAuthentication(authentication);
-		return ResponseEntity.ok("Loged in successfully");
+	public ResponseEntity<String> login(@RequestBody LogInDto logInDto, HttpSession session) {
+				
+		return ResponseEntity.ok(userService.login(logInDto, session));
 	}
 	
    @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody RegisterDto registerDto) {
-        if (userRepository.existsByUserName(registerDto.getUserName())) {
-            return ResponseEntity
-                .badRequest()
-                .body("Username already exists");
-        }
-
-        UserEntity user = new UserEntity();
-        user.setUserName(registerDto.getUserName());
-        user.setEmail(registerDto.getEmail());
-        user.setPassword(passwordEncoder.encode(registerDto.getPassword()));
-
-        Role defaultRole = roleRepository.findByName("ROLE_USER")
-                            .orElseGet(() -> {
-                                Role newRole = new Role();
-                                newRole.setName("ROLE_USER");
-                                return roleRepository.save(newRole);
-                            });
         
-        user.setRoles(Collections.singletonList(defaultRole));
-        userRepository.save(user);
-        
-        return ResponseEntity.ok("User registered successfully");
+        return userService.register(registerDto);
     }
 }

@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import example.WebShopTrening.BasketService.Basket;
 import example.WebShopTrening.BasketService.IBasketService;
-import example.WebShopTrening.entitets.Basket;
-import example.WebShopTrening.entitets.BasketItem;
+import example.WebShopTrening.Dto.BasketItemDto;
 import jakarta.validation.Valid;
 
 @RestController
@@ -48,7 +48,8 @@ public class BasketController {
     public ResponseEntity<Basket> addOrUpdateItem(
             @RequestParam(required = false) Long basketId,
             @RequestParam Long userId,
-            @Valid @RequestBody BasketItem item) {
+            @Valid 
+            @RequestBody BasketItemDto item) {
         Basket updatedBasket = basketService.addOrUpdateItem(basketId, userId, item);
         return ResponseEntity.ok(updatedBasket);
     }

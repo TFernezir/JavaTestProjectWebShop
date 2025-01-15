@@ -1,8 +1,7 @@
-package example.WebShopTrening.entitets;
+package example.WebShopTrening.UserService;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -51,11 +50,9 @@ public class UserEntity {
     )
     private List<Role> roles = new ArrayList<>();
 
-    // Default constructor
     public UserEntity() {
     }
 
-    // Constructor with required fields
     public UserEntity(String userName, String email, String password) {
         this.userName = userName;
         this.email = email;

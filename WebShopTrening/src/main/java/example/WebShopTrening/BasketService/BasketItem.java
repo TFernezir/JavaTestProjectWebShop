@@ -1,7 +1,16 @@
-package example.WebShopTrening.entitets;
+package example.WebShopTrening.BasketService;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import example.WebShopTrening.ProductService.Product;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
@@ -12,6 +21,7 @@ public class BasketItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
+    @JsonBackReference 
     @ManyToOne
     @JoinColumn(name = "basket_id", nullable = false)
     private Basket basket;
@@ -29,11 +39,9 @@ public class BasketItem {
     @Positive(message = "Price must be greater than 0")
     @Column(nullable = false)
     private Double unitPrice;
-    
-    // Constructors
+
     public BasketItem() {}
     
-    // Getters and Setters
     public Long getId() {
         return id;
     }

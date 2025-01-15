@@ -1,4 +1,4 @@
-package example.WebShopTrening.entitets;
+package example.WebShopTrening.BasketService;
 
 public enum BasketStatus {
 	ACTIVE,

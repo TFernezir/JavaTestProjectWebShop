@@ -1,9 +1,9 @@
-package example.WebShopTrening.entitets;
+package example.WebShopTrening.BasketService;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -28,6 +28,7 @@ public class Basket {
     @Column(nullable = false)
     private Long userId;
     
+    @JsonManagedReference
     @OneToMany(mappedBy = "basket", 
     		cascade = CascadeType.ALL, 
     		orphanRemoval = true)

@@ -31,18 +31,21 @@ public class ProductsController {
 	public ProductsController(IProductService productService) {
 		this.productService = productService;
 	}
-
+	
 	@GetMapping
 	public ResponseEntity<List<Product>> getProducts(
-			@RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "ASC") String sortDir,
-            @RequestParam(defaultValue = "name") String sortBy,
-            @RequestParam(required = false) String search
-            ) {
-		Sort.Direction direction = sortDir.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
-		Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
-		return ResponseEntity.ok(productService.findAllWithFilters(pageable, search));
+	    @RequestParam(defaultValue = "0") int page,
+	    @RequestParam(defaultValue = "10") int size,
+	    @RequestParam(defaultValue = "ASC") String sortDir,
+	    @RequestParam(defaultValue = "name") String sortBy,
+	    @RequestParam(required = false) String search,
+	    @RequestParam(defaultValue = "0") Double minPrice,
+	    @RequestParam(required = false) Double maxPrice
+	) {
+	    Sort.Direction direction = sortDir.equalsIgnoreCase("asc") ? 
+	        Sort.Direction.ASC : Sort.Direction.DESC;
+	    Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
+	    return ResponseEntity.ok(productService.findAllWithFilters(pageable, search, minPrice, maxPrice));
 	}
 
 	@GetMapping("/{productId}")

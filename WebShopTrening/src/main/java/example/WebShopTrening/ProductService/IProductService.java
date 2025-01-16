@@ -5,8 +5,7 @@ import java.util.List;
 import org.springframework.data.domain.Pageable;
 
 public interface IProductService {
-
-	List<Product> findAllWithFilters(Pageable pagable, String search);
+	List<Product> findAllWithFilters(Pageable pagable, String search, Double minPrice, Double maxPrice);
 
 	Product getProduct(Long productId);
 

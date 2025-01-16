@@ -1,5 +1,6 @@
 package example.WebShopTrening.ProductService;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -25,15 +26,33 @@ public class ProductService implements IProductService {
 	public ProductService(ProductRepository productRepository) {
 		this.productRepository = productRepository;
 	}
-
+	
 	@Override
-	@Cacheable("products")
-    public List<Product> findAllWithFilters(Pageable pageable, String search) {
-		logger.info("Executing findAllWithFilters with " + pageable + " and search string " + search);
-		if (search == null || search.trim().isEmpty()) {
-	        return productRepository.findAll(pageable).getContent();
+    public List<Product> findAllWithFilters(Pageable pageable, String search, Double minPrice, Double maxPrice) {
+		logger.info("Executing findAllWithFilters with " + pageable + 
+					" and search string " + search + 
+					" price between: " + minPrice + " and " + maxPrice);
+		
+		if (minPrice != null && maxPrice != null && minPrice > maxPrice) {
+			logger.warn("Invalid price range: minPrice: " + minPrice + 
+						" is greater than maxPrice" + maxPrice);
+	        return Collections.emptyList();
 	    }
-        return productRepository.findByNameContainingIgnoreCaseOrAboutContainingIgnoreCase(search, search, pageable).stream().toList();
+		
+		if (maxPrice == null || maxPrice <= 0) {	
+	        maxPrice = productRepository.findMaxPrice();
+	    }
+		
+		if (search == null || search.trim().isEmpty()) {
+			logger.info("No search term provided, querying by price range only:" + minPrice + "," + maxPrice);
+	        return productRepository.findByPriceBetween(minPrice, maxPrice, pageable);
+	    }
+			
+        return productRepository.findByFilters(
+        		minPrice,
+        		maxPrice,
+        		search,      		
+        		pageable);
 	}
 
 	@Override
@@ -76,4 +95,5 @@ public class ProductService implements IProductService {
         }
         productRepository.deleteById(productId);
     }
+
 }

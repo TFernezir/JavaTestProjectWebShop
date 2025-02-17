@@ -111,24 +111,37 @@
 </template>
 
 <script>
+import { useAuthStore } from '~/stores/authStore'
+import { useNuxtApp } from '#app'
+
 export default {
   data() {
     return {
       isOpen: false,
-    };
+    }
+  },
+  setup() {
+    const { $isClient } = useNuxtApp()
+    const authStore = useAuthStore()
+    if ($isClient) {
+      authStore.initAuth() // Initialize auth state on client side
+    }
+    return {
+      authStore
+    }
   },
   methods: {
     toggleDrawer() {
-      this.isOpen = !this.isOpen;
+      this.isOpen = !this.isOpen
     },
     closeDrawer() {
-      this.isOpen = false;
+      this.isOpen = false
     },
   },
   watch: {
     isOpen(value) {
-      if (process.client) {
-        document.body.style.overflow = value ? "hidden" : "";
+      if (useNuxtApp().$isClient) {
+        document.body.style.overflow = value ? "hidden" : ""
       }
     },
   },
@@ -139,7 +152,7 @@ export default {
       });
     }
   },
-};
+}
 </script>
 
 <style></style>

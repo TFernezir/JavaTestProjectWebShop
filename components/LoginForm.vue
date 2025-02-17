@@ -57,6 +57,15 @@
 <script setup>
 const authStore = useAuthStore();
 
+onMounted(() => {
+  if (typeof window !== 'undefined') {
+    // Ensure token is not cleared unnecessarily
+    if (!localStorage.getItem('authToken')) {
+      localStorage.setItem('authToken', '');
+    }
+  }
+});
+
 const form = reactive({
   email: "",
   password: "",
@@ -71,10 +80,8 @@ const handleSubmit = async () => {
       password: form.password,
     };
 
-    console.log("Before store");
     const response = await authStore.login(dto);
-    if (!response) {
-      console.log("if !response " + response);
+    if (response) {
       await navigateTo("/");
     }
   } catch (error) {

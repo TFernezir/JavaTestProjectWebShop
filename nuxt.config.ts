@@ -8,7 +8,7 @@ export default defineNuxtConfig({
   ],
   app: {
     head: {
-      title: "Nuxt skolica",
+      title: 'Nuxt skolica',
       link: [
         {
           rel: 'stylesheet',
@@ -17,9 +17,10 @@ export default defineNuxtConfig({
       ],
       meta: [
         {
-          name: "description", content: "Nuxt 3 skolica"
+          name: 'description',
+          content: 'Nuxt 3 skolica'
         }
       ]
     }
-  },
+  }
 })

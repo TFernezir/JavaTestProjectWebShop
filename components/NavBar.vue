@@ -15,24 +15,83 @@
     </div>
 
     <!-- Navbar -->
-    <div class="hidden md:block">
+     <div v-if="!authStore.isAuthenticated">
+      <NuxtLink
+        to="/login"
+        class="cta bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded text-white font-semibold"
+        >Sign Up
+      </NuxtLink>
+    </div>
+    <div v-if="authStore.isAuthenticated" class="hidden md:block">
       <ul class="flex space-x-8 text-sm font-sans">
         <li>
-          <NuxtLink to="/" class="active border-b-2 border-blue-500 pb-1"
-            >Home</NuxtLink
+          <NuxtLink 
+            to="/" 
+            :class="[$route.path === '/' ? 'border-b-2 border-blue-500 pb-1' : '']"
           >
+            Home
+          </NuxtLink>
         </li>
-        <li><NuxtLink to="/products">Products</NuxtLink></li>
-        <li><NuxtLink to="/cart">Cart</NuxtLink></li>
-        <li><NuxtLink to="/profile">Profile</NuxtLink></li>
-        <li><NuxtLink to="/logout">Logout</NuxtLink></li>
         <li>
-          <NuxtLink
-            to="/login"
-            class="cta bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded text-white font-semibold"
-            >Sign Up</NuxtLink
+          <NuxtLink 
+            to="/products"
+            :class="[$route.path === '/products' ? 'border-b-2 border-blue-500 pb-1' : '']"
           >
+            Products
+          </NuxtLink>
         </li>
+        <li>
+          <NuxtLink 
+            to="/cart"
+            :class="[$route.path === '/cart' ? 'border-b-2 border-blue-500 pb-1' : '']"
+          >
+            Cart
+          </NuxtLink>
+        </li>
+        <div class="relative" ref="profileDropdown">
+          <button 
+            @click="toggleProfileDropdown" 
+            class="p-1.5 transition-all duration-200 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-300"
+            :class="[
+              ($route.path === '/profile' || isProfileOpen) 
+                ? 'bg-blue-500 text-white hover:bg-blue-600' 
+                : 'hover:bg-gray-100 text-gray-600'
+            ]"
+          >
+            <span class="material-symbols-outlined text-[20px]">account_circle</span>
+          </button>
+          
+          <transition
+            enter-active-class="transition ease-out duration-200"
+            enter-from-class="opacity-0 translate-y-1"
+            enter-to-class="opacity-100 translate-y-0"
+            leave-active-class="transition ease-in duration-150"
+            leave-from-class="opacity-100 translate-y-0"
+            leave-to-class="opacity-0 translate-y-1"
+          >
+            <div
+              v-if="isProfileOpen"
+              class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50"
+              @click.outside="closeProfileDropdown"
+            >
+              <NuxtLink
+                to="/profile"
+                @click="closeProfileDropdown"
+                class="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+              >
+                Profile
+              </NuxtLink>
+              <NuxtLink
+                to="/logout"
+                @click="closeProfileDropdown"
+                class="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+              >
+                Logout
+              </NuxtLink>
+            </div>
+          </transition>
+        </div>
+        
       </ul>
     </div>
 
@@ -82,11 +141,15 @@
           >
         </li>
         <li>
-          <NuxtLink
+          <NuxtLink as button
             to="/profile"
             @click="closeDrawer"
             class="block py-3 px-4 hover:bg-gray-100"
-            >Profile</NuxtLink
+            > <button class="p-2 rounded-full hover:bg-gray-100 transition-colors">
+            <span class="material-symbols-outlined text-gray-600 text-xl">
+              person
+            </span>
+          </button></NuxtLink
           >
         </li>
         <li>
@@ -97,27 +160,23 @@
             >Logout</NuxtLink
           >
         </li>
-        <li>
           <NuxtLink
             to="/login"
             @click="closeDrawer"
             class="block py-3 px-4 text-center bg-blue-500 hover:bg-blue-600 text-white rounded mt-4"
-            >Sign Up</NuxtLink
-          >
-        </li>
+            >Sign Up
+          </NuxtLink>
       </ul>
     </aside>
   </div>
 </template>
 
 <script>
-import { useAuthStore } from '~/stores/authStore'
-import { useNuxtApp } from '#app'
-
 export default {
   data() {
     return {
       isOpen: false,
+      isProfileOpen: false
     }
   },
   setup() {
@@ -134,9 +193,32 @@ export default {
     toggleDrawer() {
       this.isOpen = !this.isOpen
     },
+    toggleProfileDropdown() {
+      this.isProfileOpen = !this.isProfileOpen
+    },
+    closeProfileDropdown() {
+      this.isProfileOpen = false
+    },
     closeDrawer() {
       this.isOpen = false
     },
+    handleClickOutside(event) {
+      const dropdown = this.$refs.profileDropdown
+      if (dropdown && !dropdown.contains(event.target)) {
+        this.isProfileOpen = false
+      }
+    },
+  },
+  mounted() {
+    document.addEventListener('click', this.handleClickOutside)
+    if (process.client) {
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && this.isOpen) this.closeDrawer();
+      });
+    }
+  },
+  beforeDestroy() {
+    document.removeEventListener('click', this.handleClickOutside)
   },
   watch: {
     isOpen(value) {
@@ -144,13 +226,6 @@ export default {
         document.body.style.overflow = value ? "hidden" : ""
       }
     },
-  },
-  mounted() {
-    if (process.client) {
-      document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape" && this.isOpen) this.closeDrawer();
-      });
-    }
   },
 }
 </script>

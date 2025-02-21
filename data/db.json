@@ -1,122 +1,154 @@
 {
   "cart": [
     {
-      "title": "Lava Potion",
-      "price": 20,
-      "description": "Gain heat resistance for 3 minutes.",
-      "img": "/img/potion.png",
       "id": 1,
+      "name": "Lava Potion",
+      "price": 20,
+      "about": "Gain heat resistance for 3 minutes.",
+      "category": "Potions",
+      "available": true,
+      "img": "/img/potion.png",
       "quantity": 1
     },
     {
-      "title": "Healing Crystal",
-      "price": 30,
-      "description": "Makes the owner immune to poison.",
-      "img": "/img/crystal.png",
       "id": 7,
+      "name": "Healing Crystal",
+      "price": 30,
+      "about": "Makes the owner immune to poison.",
+      "category": "Crystals",
+      "available": true,
+      "img": "/img/crystal.png",
       "quantity": 1
     },
     {
-      "title": "Poison Hammer",
-      "price": 100,
-      "description": "Hammer infused with posion gem magic.",
-      "img": "/img/hammer.png",
       "id": 2,
+      "name": "Poison Hammer",
+      "price": 100,
+      "about": "Hammer infused with posion gem magic.",
+      "category": "Weapons",
+      "available": true,
+      "img": "/img/hammer.png",
       "quantity": 2
     },
     {
-      "title": "Ring of Fortitude",
-      "price": 75,
-      "description": "Casts a magic protection barrier.",
-      "img": "/img/ring.png",
       "id": 4,
+      "name": "Ring of Fortitude",
+      "price": 75,
+      "about": "Casts a magic protection barrier.",
+      "category": "Accessories",
+      "available": true,
+      "img": "/img/ring.png",
       "quantity": 1
     }
   ],
   "products": [
     {
-      "title": "Lava Potion",
+      "id": 1,
+      "name": "Lava Potion",
       "price": 20,
-      "description": "Gain heat resistance for 3 minutes.",
-      "img": "/img/potion.png",
-      "id": 1
+      "about": "Gain heat resistance for 3 minutes.",
+      "category": "Potions",
+      "available": true,
+      "img": "/img/potion.png"
     },
     {
-      "title": "Poison Hammer",
+      "id": 2,
+      "name": "Poison Hammer",
       "price": 100,
-      "description": "Hammer infused with posion gem magic.",
-      "img": "/img/hammer.png",
-      "id": 2
+      "about": "Hammer infused with posion gem magic.",
+      "category": "Weapons",
+      "available": true,
+      "img": "/img/hammer.png"
     },
     {
-      "title": "Sun Shield",
+      "id": 3,
+      "name": "Sun Shield",
       "price": 50,
-      "description": "Shield passed down the by tribe of Ancients.",
-      "img": "/img/shield.png",
-      "id": 3
+      "about": "Shield passed down the by tribe of Ancients.",
+      "category": "Accessories",
+      "available": true,
+      "img": "/img/shield.png"
     },
     {
-      "title": "Ring of Fortitude",
+      "id": 4,
+      "name": "Ring of Fortitude",
       "price": 75,
-      "description": "Casts a magic protection barrier.",
-      "img": "/img/ring.png",
-      "id": 4
+      "about": "Casts a magic protection barrier.",
+      "category": "Accessories",
+      "available": true,
+      "img": "/img/ring.png"
     },
     {
-      "title": "Crystal Sword",
-      "price": 120,
-      "description": "Sharp sword the can cut through armour.",
-      "img": "/img/sword.png",
-      "id": 5
-    },
-    {
-      "title": "Summoning Book",
+      "id": 5,
+      "name": "Dragon Book",
       "price": 200,
-      "description": "Summon the undead to aid in battle.",
-      "img": "/img/book.png",
-      "id": 6
+      "about": "Rare crafting material from ancient dragons.",
+      "category": "Materials",
+      "available": false,
+      "img": "/img/book.png"
     },
     {
-      "title": "Healing Crystal",
+      "id": 6,
+      "name": "Enchanted Sword",
+      "price": 125,
+      "about": "A sword with magical properties.",
+      "category": "Weapons",
+      "available": true,
+      "img": "/img/sword.png"
+    },
+    {
+      "id": 7,
+      "name": "Healing Crystal",
       "price": 30,
-      "description": "Makes the owner immune to poison.",
-      "img": "/img/crystal.png",
-      "id": 7
+      "about": "Makes the owner immune to poison.",
+      "category": "Crystals",
+      "available": true,
+      "img": "/img/crystal.png"
     },
     {
-      "title": "Healing Herbs",
+      "id": 8,
+      "name": "Healing Herbs",
       "price": 30,
-      "description": "Restores user back to full health.",
-      "img": "/img/herb.png",
-      "id": 8
+      "about": "Restores user back to full health.",
+      "category": "Herbs",
+      "available": true,
+      "img": "/img/herb.png"
     },
     {
-      "title": "Flaming Axe",
+      "id": 9,
+      "name": "Flaming Axe",
       "price": 150,
-      "description": "Attack foes with burning energy.",
-      "img": "/img/axe.png",
-      "id": 9
+      "about": "Attack foes with burning energy.",
+      "category": "Weapons",
+      "available": true,
+      "img": "/img/axe.png"
     },
     {
-      "title": "Exploding Gem",
+      "id": 10,
+      "name": "Exploding Gem",
       "price": 50,
-      "description": "Throw at the ground to explode.",
-      "img": "/img/gem.png",
-      "id": 10
+      "about": "Throw at the ground to explode.",
+      "category": "Gems",
+      "available": true,
+      "img": "/img/gem.png"
     },
     {
-      "title": "Mysterious Key",
+      "id": 11,
+      "name": "Mysterious Key",
       "price": 500,
-      "description": "Opens a chest sealed by darkness.",
-      "img": "/img/key.png",
-      "id": 11
+      "about": "Opens a chest sealed by darkness.",
+      "category": "Keys",
+      "available": true,
+      "img": "/img/key.png"
     },
     {
-      "title": "Golden Rock",
+      "id": 12,
+      "name": "Golden Rock",
       "price": 100,
-      "description": "Used to trade with the mountain dwarves.",
-      "img": "/img/gold.png",
-      "id": 12
+      "about": "Used to trade with the mountain dwarves.",
+      "category": "Rocks",
+      "available": true,
+      "img": "/img/gold.png"
     }
   ]
 }

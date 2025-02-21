@@ -16,7 +16,7 @@
 
 <script setup>
 import { useRoute } from "vue-router";
-import Navbar from "@/components/Navbar.vue";
+import Navbar from "@/components/NavBar.vue";
 import { useCartStore } from "@/stores/cartStore";
 
 const cartStore = useCartStore();

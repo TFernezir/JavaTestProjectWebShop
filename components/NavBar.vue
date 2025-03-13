@@ -74,6 +74,7 @@
               class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50"
               @click.outside="closeProfileDropdown"
             >
+            <h4>{{ user?.name }}</h4>
               <NuxtLink
                 to="/profile"
                 @click="closeProfileDropdown"

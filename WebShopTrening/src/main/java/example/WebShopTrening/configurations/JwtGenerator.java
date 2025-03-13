@@ -3,7 +3,6 @@ package example.WebShopTrening.configurations;
 import java.time.Instant;
 import java.util.Date;
 
-import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
@@ -44,17 +43,16 @@ public class JwtGenerator {
 
     public boolean validToken(String token) {
         try {
-            System.out.println("Validating token: " + token);
-            System.out.println("Using secret: " + SecurityConstants.JWT_SECRET);
-            Jwts.parserBuilder()
+            Claims claims = Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
-                .parseClaimsJws(token);
-            System.out.println("Token is valid");
-            return true;
+                .parseClaimsJws(token)
+                .getBody();
+            
+            // Check if token is expired
+            return !claims.getExpiration().before(new Date());
         } catch (Exception e) {
-        	System.out.println("Token validation failed: " + e.getMessage());
-            throw new AuthenticationCredentialsNotFoundException("JWT was expired or incorrect");
+            return false;
         }
     }
 }

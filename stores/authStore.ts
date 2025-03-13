@@ -39,14 +39,13 @@ export const useAuthStore = defineStore('auth', {
         })
 
         if (!response) {
-          throw new Error('Invalid response from server')
+          throw new Error('INVALID_RESPONSE')
         }
         
         if (typeof window !== 'undefined') {
           localStorage.setItem('authToken', response)
         }
 
-        // Fetch user details
         const user = await $fetch<User>(`http://localhost:5001/user/${loginData.email}`, {
           method: 'GET',
           headers: {
@@ -58,16 +57,27 @@ export const useAuthStore = defineStore('auth', {
           this.user = user
           return true
         } else {
-          throw new Error('User not found.')
+          throw new Error('USER_NOT_FOUND')
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Login error:', error)
-        throw error
+        
+        // Handle specific error cases
+        if (error.response?.status === 401) {
+          throw new Error('Invalid email or password')
+        } else if (error.message === 'USER_NOT_FOUND') {
+          throw new Error('User not found')
+        } else if (error.message === 'INVALID_RESPONSE') {
+          throw new Error('Server error. Please try again later')
+        } else if (!navigator.onLine) {
+          throw new Error('No internet connection. Please check your network')
+        } else {
+          throw new Error('An error occurred during login. Please try again')
+        }
       }
     },
 
     logout() {
-      console.log('Logging out...')
       this.user = null
       if (typeof window !== 'undefined') {
         localStorage.removeItem('authToken')
@@ -75,35 +85,40 @@ export const useAuthStore = defineStore('auth', {
       navigateTo('/login')
     },
 
-    // Initialize auth state from localStorage
-    initAuth() {
+    async initAuth() {
       if (typeof window !== 'undefined') {
         const token = localStorage.getItem('authToken')
-        if (token) {
-          this.fetchUser()
+        if (token && !this.user) {
+          return await this.fetchUser()
         }
+        return this.user
       }
     },
 
-    // Fetch user details using stored token
     async fetchUser() {
       if (typeof window !== 'undefined') {
         const token = localStorage.getItem('authToken')
-        if (!token) return
-        console.log('Fetching user...')
-        console.log('Fetching user with token:', token)
+        if (!token) return null
+        
         try {
-          const user = await $fetch<User>(`http://localhost:5001/user/${this.user?.email}`, {
+          const tokenData = JSON.parse(atob(token.split('.')[1]))
+          const userEmail = tokenData.sub
+          
+          if (!userEmail) return null
+
+          const user = await $fetch<User>(`http://localhost:5001/user/${userEmail}`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           })
           this.user = user
-          console.log('User fetched:', user)
+          return user
         } catch (error) {
           this.logout()
+          return null
         }
       }
+      return null
     }
   }
 })

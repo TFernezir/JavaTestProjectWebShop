@@ -41,7 +41,7 @@ public class BasketService implements IBasketService {
 	@Override
 	public Optional<Basket> getBasketByUserId(Long userId) {
 		logger.info("Executing" + getClass() + "input:" + userId);
-		return basketRepository.findByUserId(userId);
+		return basketRepository.findByUserIdAndStatus(userId, BasketStatus.ACTIVE);
 	}
 
 	@Override

@@ -2,7 +2,7 @@
   <div
     class="min-h-screen flex flex-col items-center justify-center px-4 md:px-8 text-white text-center"
   >
-    <h1 class="text-3xl md:text-4xl font-bold mb-4">Welcome to Our Webshop</h1>
+    <h1 class="text-3xl md:text-4xl font-bold mb-4">Welcome to Webshop</h1>
     <p class="text-base md:text-lg mb-6">
       Discover the best products at unbeatable prices.
     </p>
